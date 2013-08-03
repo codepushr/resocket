@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style>
+    .content {
+      border: 1px #000 solid; width: 500px; height: 100px; margin: 0 0 8px 0; padding:5px; font-family: 'Lucida Grande'; font-size: 11px; overflow: scroll;
+    }
+    .text-input {
+      border: 1px #000 solid; width: 450px; padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content" id="content"></div>
+  <input class="text-input" id="text-input" type="text" autofocus>
+  <button id="button">Send</button>
+
+  <script type="text/javascript">
+    var ws = null,
+        content = document.getElementById('content'),
+        textInput = document.getElementById('text-input'),
+        button = document.getElementById('button');
+
+    if ("WebSocket" in window) {
+      ws = new WebSocket("ws://localhost:8080/");
+
+      ws.onopen = function() {
+        sendServer("event_1#Connection opened ...");
+      };
+
+      ws.onmessage = function (evt) {
+        var received_msg = evt.data;
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode('Server: ' + received_msg));
+        content.appendChild(div);
+      };
+
+      ws.onclose = function() {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode('Connection lost.'));
+        content.appendChild(div);
+      };
+
+      button.addEventListener('click', function () {
+        send();
+      });
+
+      textInput.addEventListener('keypress', function (evt) {
+        if (evt.keyCode == 13) {
+          send();
+        }
+      });
+    }
+
+    function send() {
+      if (textInput.value != '') {
+        ws.send('event_1#' + textInput.value);
+        textInput.value = '';
+      }
+    }
+
+    function sendServer(text) {
+      ws.send(text);
+    }
+  </script>
+</body>
+</html>
