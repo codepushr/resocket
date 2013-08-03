@@ -1,6 +1,6 @@
 <?php
 
-class SocketConnection {
+class SocketConnection {
     public $connectionId;
     public $socket;
     public $handshake;
